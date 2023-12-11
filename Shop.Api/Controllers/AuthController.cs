@@ -129,9 +129,6 @@ namespace Shop.Api.Controllers
                     return BadRequest("Authentication failed");
                 }
 
-            // В authResponse.AccessToken содержится токен доступа, который может быть использован для аутентификации пользователя
-            // В authResponse.IdToken содержится ID-токен, который может содержать дополнительную информацию о пользователе
-
                 return Ok(new { Idtoken = idToken, AccessToken = accessToken, RefreshToken = refreshToken, Message = "Login successful" });
             }
             catch (AmazonCognitoIdentityProviderException e)
