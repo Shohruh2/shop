@@ -131,7 +131,6 @@ namespace Shop.Api.Controllers
 
             // В authResponse.AccessToken содержится токен доступа, который может быть использован для аутентификации пользователя
             // В authResponse.IdToken содержится ID-токен, который может содержать дополнительную информацию о пользователе
-            // Проверка как это работает
 
                 return Ok(new { Idtoken = idToken, AccessToken = accessToken, RefreshToken = refreshToken, Message = "Login successful" });
             }
