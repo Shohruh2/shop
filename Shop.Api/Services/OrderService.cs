@@ -41,7 +41,7 @@ public class OrderService : IOrderService
     }
 
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken token = default)
-    {
+    {        
         return await _orderRepository.GetAllAsync(token);
     }
 }

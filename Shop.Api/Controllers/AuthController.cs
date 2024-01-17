@@ -139,7 +139,6 @@ namespace Shop.Api.Controllers
                 return BadRequest($"Authentication failed: {e.Message}");
             }
         }
-        
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
