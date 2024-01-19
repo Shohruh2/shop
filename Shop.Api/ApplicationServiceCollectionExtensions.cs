@@ -17,6 +17,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<ICustomerService, CustomerService>();
         services.AddTransient<IOrderRepository, OrderRepository>();
         services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IAuthService, CognitoAuthService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
         return services;
