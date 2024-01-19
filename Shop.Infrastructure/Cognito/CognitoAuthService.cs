@@ -79,13 +79,14 @@ public class CognitoAuthService : IAuthService
 
         // Также можно передать эти 2 токена
         // var idToken = authResponse.AuthenticationResult.IdToken;
+        //string? accessToken = authResponse.AuthenticationResult.AccessToken;
         // string refreshToken = authResponse.AuthenticationResult.RefreshToken;
         
         try
         {
             var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(login, token); 
-            string? accessToken = authResponse.AuthenticationResult.AccessToken;
-            return authResponse.HttpStatusCode == HttpStatusCode.OK ? accessToken : null;
+            var idToken = authResponse.AuthenticationResult.IdToken;
+            return authResponse.HttpStatusCode == HttpStatusCode.OK ? idToken : null;
         }
         catch (Exception e)
         {

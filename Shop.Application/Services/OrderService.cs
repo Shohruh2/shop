@@ -17,18 +17,17 @@ public class OrderService : IOrderService
     }
 
 
-    public async Task<Order?> CreateAsync(CreateOrderRequest orderRequest, Guid userId, CancellationToken token = default)
+    public async Task<Order> CreateAsync(CreateOrderRequest orderRequest, Guid userId, CancellationToken token = default)
     {
         var order = await orderRequest.MapToOrderAsync(_productRepository);
-
         var totalPrice = order.OrderItems.Sum(item => item.TotalPrice);
-
         var customer = await _orderRepository.GetCustomerAsync(userId, token);
+        
         if (customer == null || customer.Balance < totalPrice)
         {
             return null;
         }
-
+        
         customer.Balance -= totalPrice;
         await _orderRepository.UpdateCustomerAsync(customer, token);
 

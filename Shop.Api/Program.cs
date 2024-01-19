@@ -76,7 +76,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApiDbContext>(options=>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProductsApiConnectionString")));
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerValidator>();
 builder.Services.AddApplication(); 
 
 var app = builder.Build();
