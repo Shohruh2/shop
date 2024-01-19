@@ -1,6 +1,8 @@
-﻿using Amazon.CognitoIdentityProvider;
+﻿using System.Net;
+using Amazon.CognitoIdentityProvider;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Api.Contracts.Requests;
+using Shop.Api.Mapping;
 using Shop.Api.Services;
 
 namespace Shop.Api.Controllers
@@ -24,10 +26,7 @@ namespace Shop.Api.Controllers
             {
                 return Ok("User registered successfully");
             }
-            else
-            {
-                return BadRequest($"Registration failed");
-            }
+            return BadRequest($"Registration failed");
         }
         
         [HttpPost("confirm")]
@@ -38,53 +37,24 @@ namespace Shop.Api.Controllers
             {
                 return Ok("User confirmed successfully");
             }
-            else
-            {
-                return BadRequest("Confirmation failed");
-            }
+            
+            return BadRequest("Confirmation failed");
         }
         
-        //
-        // [HttpPost("login")]
-        // public async Task<IActionResult> Login([FromBody] LoginRequest model)
-        // {
-        //     var initiateAuthRequest = new AdminInitiateAuthRequest
-        //     {
-        //         UserPoolId = "eu-north-1_2sVtDUSZu",
-        //         ClientId = _clientId,
-        //         AuthFlow = AuthFlowType.ADMIN_NO_SRP_AUTH,
-        //         AuthParameters = new Dictionary<string, string>
-        //         {
-        //             {"USERNAME", model.UserName},
-        //             {"PASSWORD", model.Password},
-        //             {"SECRET_HASH", GenerateSecretHash(model.UserName, _clientId, _clientSecret)}
-        //         } 
-        //     };
-        //
-        //     try
-        //     {
-        //         var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(initiateAuthRequest);
-        //         
-        //
-        //         string accessToken = authResponse.AuthenticationResult.AccessToken;
-        //         var idToken = authResponse.AuthenticationResult.IdToken;
-        //         string refreshToken = authResponse.AuthenticationResult.RefreshToken;
-        //
-        //         if (authResponse.HttpStatusCode != HttpStatusCode.OK)
-        //         {
-        //             return BadRequest("Authentication failed");
-        //         }
-        //
-        //     // В authResponse.AccessToken содержится токен доступа, который может быть использован для аутентификации пользователя
-        //     // В authResponse.IdToken содержится ID-токен, который может содержать дополнительную информацию о пользователе
-        //
-        //         return Ok(new { Idtoken = idToken, AccessToken = accessToken, RefreshToken = refreshToken, Message = "Login successful" });
-        //     }
-        //     catch (AmazonCognitoIdentityProviderException e)
-        //     { 
-        //         return BadRequest($"Authentication failed: {e.Message}");
-        //     }
-        // }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest model, CancellationToken token)
+        {
+            var accessToken = await _authService.Login(model, token);
+            if (accessToken == null)
+            {
+                return BadRequest("Login or password incorrect");
+            }
+            
+            return Ok(new { AccessToken = accessToken, Message = "Login successful" });
+           
+        }
+        
+        
         // [HttpPost("refresh")]
         // public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         // {

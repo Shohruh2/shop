@@ -1,4 +1,5 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
+﻿using Amazon.CognitoIdentityProvider;
+using Amazon.CognitoIdentityProvider.Model;
 using Shop.Api.Contracts.Requests;
 
 namespace Shop.Api.Mapping;
@@ -33,6 +34,22 @@ public static class AuthMapper
             Username = request.UserName,
             ConfirmationCode = request.ConfrimationCode,
             SecretHash = secretHash
+        };
+    }
+
+    public static AdminInitiateAuthRequest MapToInitiateAuthRequest(this LoginRequest loginRequest, string? clientId, string secretHash)
+    {
+        return new AdminInitiateAuthRequest
+        {
+            UserPoolId = "eu-north-1_2sVtDUSZu",
+            ClientId = clientId,
+            AuthFlow = AuthFlowType.ADMIN_NO_SRP_AUTH,
+            AuthParameters = new Dictionary<string, string>
+            {
+                {"USERNAME", loginRequest.UserName},
+                {"PASSWORD", loginRequest.Password},
+                {"SECRET_HASH", secretHash}
+            } 
         };
     }
 }

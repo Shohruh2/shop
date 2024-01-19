@@ -9,7 +9,7 @@ public interface IAuthService
     Task<bool> ConfirmRegistration(ConfirmRegistrationRequest confirmRegistrationRequest,
         CancellationToken token = default);
 
-    Task<bool> Login(LoginRequest loginRequest, CancellationToken token = default);
+    Task<string?> Login(LoginRequest loginRequest, CancellationToken token = default);
 
     Task<string> RefreshToken(RefreshTokenRequest refreshTokenRequest, CancellationToken token = default);
 

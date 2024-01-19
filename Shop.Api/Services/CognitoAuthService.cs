@@ -68,9 +68,27 @@ public class CognitoAuthService : IAuthService
         return true;
     }
 
-    public async Task<bool> Login(LoginRequest loginRequest, CancellationToken token = default)
+    public async Task<string?> Login(LoginRequest loginRequest, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var clientId = _configuration["AWS:ClientId"];
+        var clientSecret = _configuration["AWS:ClientSecret"];
+        var secretHash = GenerateSecretHash(loginRequest.UserName, clientId, clientSecret);
+        var login = loginRequest.MapToInitiateAuthRequest(clientId, secretHash);
+
+        // Также можно передать эти 2 токена
+        // var idToken = authResponse.AuthenticationResult.IdToken;
+        // string refreshToken = authResponse.AuthenticationResult.RefreshToken;
+        
+        try
+        {
+            var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(login, token); 
+            string? accessToken = authResponse.AuthenticationResult.AccessToken;
+            return authResponse.HttpStatusCode == HttpStatusCode.OK ? accessToken : null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     public async Task<string> RefreshToken(RefreshTokenRequest refreshTokenRequest, CancellationToken token = default)
