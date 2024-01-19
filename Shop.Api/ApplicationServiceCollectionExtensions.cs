@@ -1,9 +1,10 @@
-﻿using System.Data;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Shop.Api.Database;
-using Shop.Api.Repositories;
-using Shop.Api.Services;
+﻿using FluentValidation;
+using Shop.Application.Services;
+using Shop.Domain.Customers;
+using Shop.Domain.Orders;
+using Shop.Domain.Products;
+using Shop.Infrastructure.Cognito;
+using Shop.Infrastructure.Persistence.Repositories;
 
 namespace Shop.Api;
 

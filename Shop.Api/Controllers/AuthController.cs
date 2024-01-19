@@ -1,9 +1,7 @@
-﻿using System.Net;
-using Amazon.CognitoIdentityProvider;
+﻿using Amazon.CognitoIdentityProvider;
 using Microsoft.AspNetCore.Mvc;
-using Shop.Api.Contracts.Requests;
-using Shop.Api.Mapping;
-using Shop.Api.Services;
+using Shop.Application.Services;
+using Shop.Contracts.Requests;
 
 namespace Shop.Api.Controllers
 { 

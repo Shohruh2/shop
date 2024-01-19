@@ -1,9 +1,11 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shop.Api;
-using Shop.Api.Database;
+using Shop.Application.Validators;
+using Shop.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -74,6 +76,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApiDbContext>(options=>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProductsApiConnectionString")));
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerValidator>();
 builder.Services.AddApplication(); 
 
 var app = builder.Build();
