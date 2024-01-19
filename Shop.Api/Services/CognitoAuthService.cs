@@ -27,7 +27,7 @@ public class CognitoAuthService : IAuthService
         if (clientId != null && clientSecret != null)
         {
             var secretHash = GenerateSecretHash(registrationRequest.UserName, clientId, clientSecret);
-            var signUpRequest = registrationRequest.MapToSignUpRequest(clientId, secretHash, clientSecret);
+            var signUpRequest = registrationRequest.MapToSignUpRequest(clientId, secretHash);
         
             var result = await _cognitoIdentityProvider.SignUpAsync(signUpRequest, token);
             if (result.HttpStatusCode != HttpStatusCode.OK) 
@@ -54,7 +54,18 @@ public class CognitoAuthService : IAuthService
 
     public async Task<bool> ConfirmRegistration(ConfirmRegistrationRequest confirmRegistrationRequest, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var clientId = _configuration["AWS:ClientId"];
+        var clientSecret = _configuration["AWS:ClientSecret"];
+        var secretHash = GenerateSecretHash(confirmRegistrationRequest.UserName, clientId, clientSecret);
+        var confirmCode = confirmRegistrationRequest.MapToSignUpRequest(clientId, secretHash);
+        
+        var confirmResult = await _cognitoIdentityProvider.ConfirmSignUpAsync(confirmCode, token);
+        if (confirmResult.HttpStatusCode != HttpStatusCode.OK)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<bool> Login(LoginRequest loginRequest, CancellationToken token = default)
@@ -67,7 +78,7 @@ public class CognitoAuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    public string GenerateSecretHash(string username, string clientId, string clientSecret)
+    public string GenerateSecretHash(string username, string? clientId, string? clientSecret)
     {
         var message = Encoding.UTF8.GetBytes(username + clientId);
         using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(clientSecret)))

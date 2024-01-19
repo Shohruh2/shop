@@ -13,5 +13,5 @@ public interface IAuthService
 
     Task<string> RefreshToken(RefreshTokenRequest refreshTokenRequest, CancellationToken token = default);
 
-    string GenerateSecretHash(string username, string clientId, string clientSecret);
+    string GenerateSecretHash(string username, string? clientId, string? clientSecret);
 }

@@ -9,17 +9,11 @@ namespace Shop.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        // private readonly IAmazonCognitoIdentityProvider _cognitoIdentityProvider;
-        // private readonly ICustomerService _customerService;
-        // private readonly string _clientId = "t4maqhd858lfj4jtf3ib4kptv";
-        // private readonly string _clientSecret = "8ognl84i7v44l2oro6kru0npp667poqvgpv89qvtuunk9gth3mv";
         private readonly IAuthService _authService;
 
         public AuthController(IAmazonCognitoIdentityProvider cognitoIdentityProvider, ICustomerService customerService, IAuthService authService)
         {
             _authService = authService;
-            // _cognitoIdentityProvider = cognitoIdentityProvider ?? throw new ArgumentNullException(nameof(cognitoIdentityProvider));
-            // _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
         }
 
         [HttpPost("register")]
@@ -34,74 +28,22 @@ namespace Shop.Api.Controllers
             {
                 return BadRequest($"Registration failed");
             }
-            // var request = new SignUpRequest
-            // {
-            //     ClientId = _clientId,
-            //     SecretHash = GenerateSecretHash(model.UserName, _clientId, _clientSecret),
-            //     Username = model.UserName,
-            //     Password = model.Password,
-            //     UserAttributes = new List<AttributeType>
-            //     {
-            //         new AttributeType { Name = "given_name", Value = model.FirstName},
-            //         new AttributeType { Name = "middle_name", Value = model.LastName},
-            //         new AttributeType { Name = "email", Value = model.Email},
-            //         new AttributeType { Name = "gender", Value = model.Gender},
-            //         new AttributeType { Name = "birthdate", Value = model.Birthday.ToString("dd/MM/yyyy")},
-            //     }
-            // };
-            //
-            // try
-            // {
-            //     var result = await _cognitoIdentityProvider.SignUpAsync(request);
-            //     if (result.HttpStatusCode != HttpStatusCode.OK)
-            //     {
-            //         return BadRequest();
-            //     }
-            //
-            //     await _customerService.CreateAsync(new CreateCustomerRequest
-            //     {
-            //         Id = Guid.Parse(result.UserSub),
-            //         Name = model.FirstName,
-            //         Surname = model.LastName,
-            //         Gender = model.Gender,
-            //         Birthday = model.Birthday,
-            //     });
-            //
-            //     return Ok("User registered successfully");
-            // }
-            // catch (AmazonCognitoIdentityProviderException e)
-            // {
-            //     return BadRequest($"Registration failed: {e.Message}");
-            // }
         }
-
-        // ... (остальные методы)
-        // [HttpPost("confirm")]
-        // public async Task<IActionResult> ConfirmRegistration([FromBody] ConfirmRegistrationRequest model)
-        // {
-        //     var confirmRequest = new ConfirmSignUpRequest
-        //     {
-        //         ClientId = "t4maqhd858lfj4jtf3ib4kptv",
-        //         Username = model.UserName,
-        //         ConfirmationCode = model.ConfrimationCode,
-        //         SecretHash = GenerateSecretHash(model.UserName, _clientId, _clientSecret)
-        //     };
-        //
-        //     try
-        //     {
-        //         var confirmResult = await _cognitoIdentityProvider.ConfirmSignUpAsync(confirmRequest);
-        //         if (confirmResult.HttpStatusCode != HttpStatusCode.OK) 
-        //         {
-        //             return BadRequest("Confirmation failed");
-        //         }
-        //
-        //         return Ok("User registration confirmed successfully");
-        //     }
-        //     catch (AmazonCognitoIdentityProviderException e)
-        //     {
-        //         return BadRequest($"Confirmation failed: {e.Message}");
-        //     }
-        // }
+        
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmRegistration([FromBody] ConfirmRegistrationRequest model, CancellationToken token)
+        {
+            var confirm = await _authService.ConfirmRegistration(model, token);
+            if (confirm != false)
+            {
+                return Ok("User confirmed successfully");
+            }
+            else
+            {
+                return BadRequest("Confirmation failed");
+            }
+        }
+        
         //
         // [HttpPost("login")]
         // public async Task<IActionResult> Login([FromBody] LoginRequest model)

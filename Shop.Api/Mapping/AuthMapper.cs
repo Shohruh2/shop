@@ -5,7 +5,7 @@ namespace Shop.Api.Mapping;
 
 public static class AuthMapper
 {
-    public static SignUpRequest MapToSignUpRequest(this RegistrationRequest request, string clientId, string secretHash, string clientSecret)
+    public static SignUpRequest MapToSignUpRequest(this RegistrationRequest request, string clientId, string secretHash)
     {
         return new SignUpRequest
         {
@@ -21,6 +21,18 @@ public static class AuthMapper
                 new AttributeType { Name = "gender", Value = request.Gender},
                 new AttributeType { Name = "birthdate", Value = request.Birthday.ToString("dd/MM/yyyy")},
             }
+        };
+    }
+
+    public static ConfirmSignUpRequest MapToSignUpRequest(this ConfirmRegistrationRequest request, string? clientId,
+        string secretHash)
+    {
+        return new ConfirmSignUpRequest
+        {
+            ClientId = clientId,
+            Username = request.UserName,
+            ConfirmationCode = request.ConfrimationCode,
+            SecretHash = secretHash
         };
     }
 }
