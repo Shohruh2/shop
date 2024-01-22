@@ -40,9 +40,9 @@ public class OrderRepository : IOrderRepository
         return false;
     }
 
-    public async Task<bool> AddOrderAsync(Order order, CancellationToken token=default)
+    public async Task<bool> AddOrderAsync(Order order, CancellationToken token = default)
     {
-        await _dbContext.Orders.AddAsync(order);
+        await _dbContext.Orders.AddAsync(order, token);
         var rowsAffected = await _dbContext.SaveChangesAsync(token);
         return rowsAffected > 0;
     }

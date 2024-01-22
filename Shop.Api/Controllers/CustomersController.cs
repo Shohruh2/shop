@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Responses;
+using ResponseError = Shop.Contracts.Responses.ResponseError;
 
 namespace Shop.Api.Controllers;
 
@@ -16,48 +19,52 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Customer.GetAll)]
-    public async Task<IActionResult> GetAll(CancellationToken token)
+    public async Task<ActionResult<Response<CustomersResponse>>> GetAll(CancellationToken token)
     {
         var customers = await _customerService.GetAllAsync(token);
-        var response = customers.MapToResponse();
+        var customerResponse = customers.MapToResponse();
+        var response = Response<CustomersResponse>.CreateSuccessResponse(customerResponse);
         return Ok(response);
     }
 
     [HttpGet(ApiEndpoints.Customer.Get)]
-    public async Task<IActionResult> Get([FromRoute] Guid id,
+    public async Task<ActionResult<Response<CustomerResponse>>> Get([FromRoute] Guid id,
         CancellationToken token)
     {
         var customer = await _customerService.GetByIdAsync(id, token);
         if (customer == null)
         {
-            return NotFound();
+            var notFoundResponse = Response<CustomerResponse>.CreateErrorResponse(new ResponseError
+            {
+                Message = "Not found",
+                Code = HttpStatusCode.NotFound.ToString()
+            });
+            return NotFound(notFoundResponse);
         }
 
         var customerResponse = customer.MapToResponse();
-        return Ok(customerResponse);
+        var response = Response<CustomerResponse>.CreateSuccessResponse(customerResponse);
+        return Ok(response);
     }
 
     [HttpPost(ApiEndpoints.Customer.Create)]
-    public async Task<IActionResult> Create([FromBody] CreateCustomerRequest customerRequest,
+    public async Task<ActionResult<Response<CustomerResponse>>> Create([FromBody] CreateCustomerRequest customerRequest,
         CancellationToken token)
     {
         var customer = await _customerService.CreateAsync(customerRequest, token);
-        var response = customer.MapToResponse();
+        var customerResponse = customer.MapToResponse();
+        var response = Response<CustomerResponse>.CreateSuccessResponse(customerResponse);
         return Ok(response);
     }
 
     [HttpPut(ApiEndpoints.Customer.Update)]
-    public async Task<IActionResult> Update([FromRoute] Guid id,
+    public async Task<ActionResult<Response<CustomerResponse>>> Update([FromRoute] Guid id,
         [FromBody] UpdateCustomerRequest updateCustomerRequest, CancellationToken token)
     {
         var customerToUpdate = await _customerService.UpdateAsync(id, updateCustomerRequest, token);
-        if (customerToUpdate != null)
-        {
-            var response = customerToUpdate.MapToResponse();
-            return Ok(response);
-        }
-
-        return NotFound();
+        var customerResponse = customerToUpdate!.MapToResponse();
+        var response = Response<CustomerResponse>.CreateSuccessResponse(customerResponse);
+        return Ok(response);
     }
 
     [HttpDelete(ApiEndpoints.Customer.Delete)]

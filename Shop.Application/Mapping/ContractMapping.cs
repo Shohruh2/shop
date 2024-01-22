@@ -93,54 +93,7 @@ public static class ContractMapping
             Items = customers.Select(MapToResponse)
         };
     }
-
-    public static async Task<Order> MapToOrderAsync(this CreateOrderRequest request, IProductRepository productRepository)
-    {
-        var orderItemsTasks = request.Items.Select(async item =>
-        {
-            var unitPrice = await GetProductPrice(item.ProductId, productRepository);
-
-            var product = await productRepository.GetByIdAsync(item.ProductId);
-
-            if (product == null || product.Quantity < item.Quantity)
-            {
-                throw new InvalidOperationException("Not enough quantity in stock for product with ID " + item.ProductId);
-            }
-
-            product.Quantity -= item.Quantity;
-            await productRepository.UpdateAsync(product);
-            
-            return new OrderItem
-            {
-                Id = Guid.NewGuid(),
-                ProductId = item.ProductId,
-                UnitPrice = unitPrice,
-                Quantity = item.Quantity
-            };
-        });
-
-        var orderItems = await Task.WhenAll(orderItemsTasks);
-
-        var order = new Order
-        {
-            Id = Guid.NewGuid(),
-            DateTime = DateTime.Now,
-            OrderItems = orderItems.ToList(),
-        };
-
-        return order;
-    }
-    private static async Task<decimal> GetProductPrice(Guid itemProductId, IProductRepository productRepository)
-    {
-        var product = await productRepository.GetByIdAsync(itemProductId);
-
-        if (product != null)
-        {
-            return product.Price;
-        }
-
-        throw new InvalidOperationException($"Product with Id {itemProductId} not found.");
-    }
+    
     
     public static OrderResponse MapToResponse(this Order order)
     {

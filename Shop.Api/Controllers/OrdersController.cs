@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Responses;
 using Shop.Domain.Orders;
 
 namespace Shop.Api.Controllers;
@@ -21,31 +23,24 @@ public class OrdersController : ControllerBase
 
     [Authorize]
     [HttpPost(ApiEndpoints.Order.Create)]
-    public async Task<ActionResult<Order>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
+    public async Task<ActionResult<Response<OrderResponse>>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
     {
-        try
-        {
-            // Получаем идентификатор текущего пользователя
-            var currentUser = _currentUserService.GetCurrentUser();
-            
-            // Передаем идентификатор пользователя в CreateAsync
-            var order = await _orderService.CreateAsync(request, currentUser.Id, token);
-            var orderResponse = order.MapToResponse();
-            return Ok(orderResponse);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal Server Error: {ex.Message}");
-        }
+        // Получаем идентификатор текущего пользователя
+        var currentUser = _currentUserService.GetCurrentUser();
 
-        return BadRequest("Something went wrong");
+        // Передаем идентификатор пользователя в CreateAsync
+        var order = await _orderService.CreateAsync(request, currentUser.Id, token);
+        var orderResponse = order.MapToResponse();
+        var response = Response<OrderResponse?>.CreateSuccessResponse(orderResponse);
+        return Ok(response);
     }
 
     [HttpGet(ApiEndpoints.Order.GetAll)]
-    public async Task<IActionResult> GetAll(CancellationToken token)
+    public async Task<ActionResult<Response<OrdersResponse>>> GetAll(CancellationToken token)
     {
         var orders = await _orderService.GetAllAsync(token);
-        var response = orders.MapToResponse();
+        var orderResponse = orders.MapToResponse();
+        var response = Response<OrdersResponse>.CreateSuccessResponse(orderResponse);
         return Ok(response);
     }
 }

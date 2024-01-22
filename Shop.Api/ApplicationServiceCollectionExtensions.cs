@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Shop.Api.Middleware;
 using Shop.Application.Services;
 using Shop.Domain.Customers;
 using Shop.Domain.Orders;
@@ -12,6 +13,7 @@ public static class ApplicationServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddTransient<CustomExceptionMiddleware>();
         services.AddTransient<IProductRepository, ProductRepository>();
         services.AddTransient<IProductService, ProductService>();
         services.AddTransient<ICustomerRepository, CustomerRepository>();

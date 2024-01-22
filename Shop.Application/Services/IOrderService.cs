@@ -1,5 +1,6 @@
 ﻿using Shop.Contracts.Requests;
 using Shop.Domain.Orders;
+using Shop.Domain.Products;
 
 namespace Shop.Application.Services;
 
