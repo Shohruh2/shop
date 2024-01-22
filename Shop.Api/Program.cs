@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shop.Api;
+using Shop.Api.Middleware;
 using Shop.Application.Validators;
 using Shop.Infrastructure.Persistence;
 
@@ -73,6 +74,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddLogging();
+
 builder.Services.AddDbContext<ApiDbContext>(options=>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProductsApiConnectionString")));
 
@@ -94,6 +97,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+app.UseMiddleware<CustomExceptionMiddleware>();
 
 app.MapControllers();
 

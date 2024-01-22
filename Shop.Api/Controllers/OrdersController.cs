@@ -25,33 +25,22 @@ public class OrdersController : ControllerBase
     [HttpPost(ApiEndpoints.Order.Create)]
     public async Task<ActionResult<Response<OrderResponse>>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
     {
-        try
-        {
-            // Получаем идентификатор текущего пользователя
-            var currentUser = _currentUserService.GetCurrentUser();
-            
-            // Передаем идентификатор пользователя в CreateAsync
-            var order = await _orderService.CreateAsync(request, currentUser.Id, token);
-            var orderResponse = order.MapToResponse();
-            var response = Response<OrderResponse?>.CreateSuccessResponse(orderResponse);
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            var response = Response<OrderResponse?>.CreateFailedResponse(new ResponseError
-            {
-                Message = ex.Message,
-                Code = HttpStatusCode.BadRequest.ToString()
-            });
-            return StatusCode(400, response);
-        }
+        // Получаем идентификатор текущего пользователя
+        var currentUser = _currentUserService.GetCurrentUser();
+
+        // Передаем идентификатор пользователя в CreateAsync
+        var order = await _orderService.CreateAsync(request, currentUser.Id, token);
+        var orderResponse = order.MapToResponse();
+        var response = Response<OrderResponse?>.CreateSuccessResponse(orderResponse);
+        return Ok(response);
     }
 
     [HttpGet(ApiEndpoints.Order.GetAll)]
-    public async Task<IActionResult> GetAll(CancellationToken token)
+    public async Task<ActionResult<Response<OrdersResponse>>> GetAll(CancellationToken token)
     {
         var orders = await _orderService.GetAllAsync(token);
-        var response = orders.MapToResponse();
+        var orderResponse = orders.MapToResponse();
+        var response = Response<OrdersResponse>.CreateSuccessResponse(orderResponse);
         return Ok(response);
     }
 }

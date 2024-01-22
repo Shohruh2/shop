@@ -1,4 +1,6 @@
-﻿namespace Shop.Contracts.Responses;
+﻿using System.Net;
+
+namespace Shop.Contracts.Responses;
 
 public class Response<TResult>
 {
@@ -19,7 +21,7 @@ public class Response<TResult>
         };
     }
     
-    public static Response<TResult> CreateFailedResponse(ResponseError error)
+    public static Response<TResult> CreateErrorResponse(ResponseError error)
     {
         return new Response<TResult>
         {
@@ -27,4 +29,9 @@ public class Response<TResult>
             Error = error
         };
     }
+}
+
+public class Response : Response<object>
+{
+    
 }
