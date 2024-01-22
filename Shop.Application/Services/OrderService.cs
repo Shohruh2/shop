@@ -1,5 +1,4 @@
-﻿using Shop.Application.Mapping;
-using Shop.Contracts.Requests;
+﻿using Shop.Contracts.Requests;
 using Shop.Domain.Orders;
 using Shop.Domain.Products;
 
@@ -82,17 +81,5 @@ public class OrderService : IOrderService
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken token = default)
     {        
         return await _orderRepository.GetAllAsync(token);
-    }
-    
-    public async Task<decimal> GetProductPrice(Guid itemProductId, IProductRepository productRepository)
-    {
-        var product = await productRepository.GetByIdAsync(itemProductId);
-
-        if (product != null)
-        {
-            return product.Price;
-        }
-
-        throw new InvalidOperationException($"Product with Id {itemProductId} not found.");
     }
 }

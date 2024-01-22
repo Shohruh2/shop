@@ -9,6 +9,4 @@ public interface IOrderService
     Task<Order> CreateAsync(CreateOrderRequest orderRequest, Guid userId, CancellationToken token = default);
 
     Task<IEnumerable<Order>> GetAllAsync(CancellationToken token = default);
-
-    Task<decimal> GetProductPrice(Guid itemProductId, IProductRepository productRepository);
 }

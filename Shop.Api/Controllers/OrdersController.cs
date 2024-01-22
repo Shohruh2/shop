@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Responses;
 using Shop.Domain.Orders;
 
 namespace Shop.Api.Controllers;
@@ -21,7 +23,7 @@ public class OrdersController : ControllerBase
 
     [Authorize]
     [HttpPost(ApiEndpoints.Order.Create)]
-    public async Task<ActionResult<Order>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
+    public async Task<ActionResult<Response<OrderResponse>>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
     {
         try
         {
@@ -31,11 +33,17 @@ public class OrdersController : ControllerBase
             // Передаем идентификатор пользователя в CreateAsync
             var order = await _orderService.CreateAsync(request, currentUser.Id, token);
             var orderResponse = order.MapToResponse();
-            return Ok(orderResponse);
+            var response = Response<OrderResponse?>.CreateSuccessResponse(orderResponse);
+            return Ok(response);
         }
         catch (Exception ex)
         {
-            return StatusCode(400, $"{ex.Message}");
+            var response = Response<OrderResponse?>.CreateFailedResponse(new ResponseError
+            {
+                Message = ex.Message,
+                Code = HttpStatusCode.BadRequest.ToString()
+            });
+            return StatusCode(400, response);
         }
     }
 
