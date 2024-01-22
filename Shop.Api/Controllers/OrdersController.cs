@@ -35,10 +35,8 @@ public class OrdersController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            return StatusCode(400, $"{ex.Message}");
         }
-
-        return BadRequest("Something went wrong");
     }
 
     [HttpGet(ApiEndpoints.Order.GetAll)]

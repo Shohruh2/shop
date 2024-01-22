@@ -17,27 +17,82 @@ public class OrderService : IOrderService
     }
 
 
-    public async Task<Order> CreateAsync(CreateOrderRequest orderRequest, Guid userId, CancellationToken token = default)
+    public async Task<Order> CreateAsync(CreateOrderRequest orderRequest, Guid userId,
+        CancellationToken token = default)
     {
-        var order = await orderRequest.MapToOrderAsync(_productRepository);
-        var totalPrice = order.OrderItems.Sum(item => item.TotalPrice);
-        var customer = await _orderRepository.GetCustomerAsync(userId, token);
-        
-        if (customer == null || customer.Balance < totalPrice)
+        var products = new List<Product>();
+        var order = new Order
         {
-            return null;
+            Id = Guid.NewGuid(),
+            DateTime = DateTime.Now
+        };
+        decimal grandTotal = 0;
+        int quantity = 0;
+        foreach (var item in orderRequest.Items)
+        {
+            var product = await _productRepository.GetByIdAsync(item.ProductId, token);
+            if (product == null)
+            {
+                throw new Exception("Product not found");
+            }
+            
+            products.Add(product);
+            if (product.Quantity < item.Quantity)
+            {
+                throw new Exception($"We don't have so much product: {product.Name} quantity {product.Quantity}");
+            }
+
+            quantity += item.Quantity;
+            
+            var orderItem = new OrderItem
+            {
+                Id = Guid.NewGuid(),
+                Quantity = item.Quantity,
+                ProductId = product.Id,
+                UnitPrice = product.Price
+            };
+            order.OrderItems.Add(orderItem);
+            grandTotal += orderItem.TotalPrice;
         }
-        
-        customer.Balance -= totalPrice;
+
+        var customer = await _orderRepository.GetCustomerAsync(userId, token);
+        if (customer == null)
+        {
+            throw new Exception($"Customer not found");
+        }
+
+        if (customer.Balance < grandTotal)
+        {
+            throw new Exception("You don't have so much money bro((");
+        }
+
+        customer.Balance -= grandTotal;
         await _orderRepository.UpdateCustomerAsync(customer, token);
 
+        foreach (var product in products)
+        {
+            product.Quantity -= quantity;
+            await _productRepository.UpdateAsync(product,token);
+        }
+        
         await _orderRepository.AddOrderAsync(order, token);
-
+            
         return order;
     }
-
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken token = default)
     {        
         return await _orderRepository.GetAllAsync(token);
+    }
+    
+    public async Task<decimal> GetProductPrice(Guid itemProductId, IProductRepository productRepository)
+    {
+        var product = await productRepository.GetByIdAsync(itemProductId);
+
+        if (product != null)
+        {
+            return product.Price;
+        }
+
+        throw new InvalidOperationException($"Product with Id {itemProductId} not found.");
     }
 }
