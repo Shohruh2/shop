@@ -1,6 +1,7 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.AuthRequests;
 
 namespace Shop.Infrastructure.Cognito;
 

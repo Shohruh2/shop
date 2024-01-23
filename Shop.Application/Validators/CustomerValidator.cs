@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.CustomerRequests;
 
 namespace Shop.Application.Validators;
 

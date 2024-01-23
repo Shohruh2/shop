@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.CustomerRequests;
 using Shop.Contracts.Responses;
-using ResponseError = Shop.Contracts.Responses.ResponseError;
+using Shop.Contracts.Responses.CustomerResponses;
+using Shop.Contracts.Responses.StandartResponse;
+using ResponseError = Shop.Contracts.Responses.StandartResponse.ResponseError;
 
 namespace Shop.Api.Controllers;
 

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Shop.Application.Mapping;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.CustomerRequests;
 using Shop.Domain.Customers;
 
 namespace Shop.Application.Services;

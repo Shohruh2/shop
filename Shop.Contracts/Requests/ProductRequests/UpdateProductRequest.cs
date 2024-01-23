@@ -1,9 +1,7 @@
-﻿namespace Shop.Contracts.Responses;
+﻿namespace Shop.Contracts.Requests.ProductRequests;
 
-public class ProductResponse
+public class UpdateProductRequest
 {
-    public required Guid Id { get; init; }
-    
     public required string Name { get; init; }
     
     public required string Description { get; init; }

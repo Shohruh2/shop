@@ -1,7 +1,9 @@
-﻿namespace Shop.Contracts.Requests;
+﻿namespace Shop.Contracts.Responses.ProductResponses;
 
-public class CreateProductRequest
+public class ProductResponse
 {
+    public required Guid Id { get; init; }
+    
     public required string Name { get; init; }
     
     public required string Description { get; init; }

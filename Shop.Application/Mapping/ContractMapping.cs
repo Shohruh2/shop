@@ -1,5 +1,10 @@
 ﻿using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.CustomerRequests;
+using Shop.Contracts.Requests.ProductRequests;
 using Shop.Contracts.Responses;
+using Shop.Contracts.Responses.CustomerResponses;
+using Shop.Contracts.Responses.OrderResponses;
+using Shop.Contracts.Responses.ProductResponses;
 using Shop.Domain.Customers;
 using Shop.Domain.Orders;
 using Shop.Domain.Products;

@@ -1,11 +1,12 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.OrderRequests;
 using Shop.Contracts.Responses;
-using Shop.Domain.Orders;
+using Shop.Contracts.Responses.OrderResponses;
+using Shop.Contracts.Responses.StandartResponse;
 
 namespace Shop.Api.Controllers;
 

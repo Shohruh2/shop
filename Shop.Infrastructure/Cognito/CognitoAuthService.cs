@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.AuthRequests;
+using Shop.Contracts.Requests.CustomerRequests;
 
 namespace Shop.Infrastructure.Cognito;
 

@@ -1,6 +1,4 @@
-﻿using Shop.Contracts.Requests;
-
-namespace Shop.Contracts.Responses;
+﻿namespace Shop.Contracts.Responses.OrderResponses;
 
 public class OrderResponse
 {

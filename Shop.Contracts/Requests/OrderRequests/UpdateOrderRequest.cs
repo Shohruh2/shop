@@ -1,6 +1,6 @@
-﻿using Shop.Contracts.Responses;
+﻿using Shop.Contracts.Responses.OrderResponses;
 
-namespace Shop.Contracts.Requests;
+namespace Shop.Contracts.Requests.OrderRequests;
 
 public class UpdateOrderRequest
 {

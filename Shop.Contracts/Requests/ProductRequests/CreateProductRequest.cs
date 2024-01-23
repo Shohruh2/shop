@@ -1,6 +1,6 @@
-﻿namespace Shop.Contracts.Requests;
+﻿namespace Shop.Contracts.Requests.ProductRequests;
 
-public class UpdateProductRequest
+public class CreateProductRequest
 {
     public required string Name { get; init; }
     

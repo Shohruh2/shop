@@ -1,4 +1,5 @@
 ﻿using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.AuthRequests;
 
 namespace Shop.Application.Services;
 

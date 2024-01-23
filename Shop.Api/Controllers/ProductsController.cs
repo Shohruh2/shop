@@ -4,7 +4,10 @@ using Shop.Api.Migrations;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.ProductRequests;
 using Shop.Contracts.Responses;
+using Shop.Contracts.Responses.ProductResponses;
+using Shop.Contracts.Responses.StandartResponse;
 
 namespace Shop.Api.Controllers;
 

@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Shop.Contracts.Responses;
+﻿namespace Shop.Contracts.Responses.StandartResponse;
 
 public class Response<TResult>
 {

@@ -1,4 +1,5 @@
 ﻿using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.OrderRequests;
 using Shop.Domain.Orders;
 using Shop.Domain.Products;
 

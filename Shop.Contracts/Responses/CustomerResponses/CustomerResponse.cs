@@ -1,4 +1,4 @@
-﻿namespace Shop.Contracts.Responses;
+﻿namespace Shop.Contracts.Responses.CustomerResponses;
 
 public class CustomerResponse
 {

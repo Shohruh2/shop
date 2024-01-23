@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
+using Shop.Contracts.Requests.AuthRequests;
 
 namespace Shop.Api.Controllers
 { 
