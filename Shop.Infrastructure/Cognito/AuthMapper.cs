@@ -53,4 +53,20 @@ public static class AuthMapper
             } 
         };
     }
+
+    public static AdminInitiateAuthRequest MapToInitiateAuthRequest(this RefreshTokenRequest refreshTokenRequest,
+        string clientId, string secretHash)
+    {
+        return new AdminInitiateAuthRequest
+        {
+            UserPoolId = "eu-north-1_2sVtDUSZu",
+            ClientId = clientId,
+            AuthFlow = AuthFlowType.REFRESH_TOKEN,
+            AuthParameters = new Dictionary<string, string>
+            {
+                {"REFRESH_TOKEN", refreshTokenRequest.RefreshToken},
+                {"SECRET_HASH", secretHash}
+            }  
+        };
+    }
 }

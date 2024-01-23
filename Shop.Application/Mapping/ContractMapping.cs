@@ -75,6 +75,7 @@ public static class ContractMapping
     {
         customer.Name = request.Name;
         customer.Surname = request.Surname;
+        customer.Gender = request.Gender;
         customer.Birthday = request.Birthday;
     }
     

@@ -1,6 +1,6 @@
 ﻿namespace Shop.Contracts.Responses.StandartResponse;
 
-public class Response<TResult>
+public class CustomResponse<TResult>
 {
     public bool IsSuccessful { get; set; }
     
@@ -10,18 +10,18 @@ public class Response<TResult>
     
     public TResult? Result { get; set; }
 
-    public static Response<TResult> CreateSuccessResponse(TResult result)
+    public static CustomResponse<TResult> CreateSuccessResponse(TResult result)
     {
-        return new Response<TResult>
+        return new CustomResponse<TResult>
         {
             IsSuccessful = true,
             Result = result
         };
     }
     
-    public static Response<TResult> CreateErrorResponse(ResponseError error)
+    public static CustomResponse<TResult> CreateErrorResponse(ResponseError error)
     {
-        return new Response<TResult>
+        return new CustomResponse<TResult>
         {
             IsSuccessful = false,
             Error = error
@@ -29,7 +29,7 @@ public class Response<TResult>
     }
 }
 
-public class Response : Response<object>
+public class CustomResponse : CustomResponse<object>
 {
     
 }

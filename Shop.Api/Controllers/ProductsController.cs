@@ -22,13 +22,13 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Product.Get)]
-    public async Task<ActionResult<Response<ProductResponse>>> Get([FromRoute] Guid id,
+    public async Task<ActionResult<CustomResponse<ProductResponse>>> Get([FromRoute] Guid id,
         CancellationToken token)
     {
         var product = await _productService.GetByIdAsync(id, token);
         if (product == null)
         {
-            var responseFail = Response<ProductResponse?>.CreateErrorResponse(new ResponseError
+            var responseFail = CustomResponse<ProductResponse?>.CreateErrorResponse(new ResponseError
             {
                 Message = "Product not found",
                 Code = HttpStatusCode.NotFound.ToString()
@@ -37,33 +37,33 @@ public class ProductsController : ControllerBase
         }
         
         var productResponse = product.MapToResponse();
-        var response = Response<ProductResponse?>.CreateSuccessResponse(productResponse);
+        var response = CustomResponse<ProductResponse?>.CreateSuccessResponse(productResponse);
         return Ok(response);
     }
 
 
     [HttpGet(ApiEndpoints.Product.GetAll)]
-    public async Task<ActionResult<Response<ProductsResponse>>> GetAll(CancellationToken token)
+    public async Task<ActionResult<CustomResponse<ProductsResponse>>> GetAll(CancellationToken token)
     {
         var products = await _productService.GetAllAsync(token);
         var productsResponse = products.MapToResponse();
-        var response = Response<ProductsResponse?>.CreateSuccessResponse(productsResponse); 
+        var response = CustomResponse<ProductsResponse?>.CreateSuccessResponse(productsResponse); 
         return Ok(response);
     }
 
     [HttpPost(ApiEndpoints.Product.Create)]
-    public async Task<ActionResult<Response<ProductResponse>>> Create([FromBody] CreateProductRequest request,
+    public async Task<ActionResult<CustomResponse<ProductResponse>>> Create([FromBody] CreateProductRequest request,
         CancellationToken token)
     {
         var product = request.MapToProduct();
         await _productService.CreateAsync(product, token);
         var productResponse = product.MapToResponse();
-        var response = Response<ProductResponse?>.CreateSuccessResponse(productResponse);
+        var response = CustomResponse<ProductResponse?>.CreateSuccessResponse(productResponse);
         return Ok(response);
     }
 
     [HttpPut(ApiEndpoints.Product.Update)]
-    public async Task<ActionResult<Response<ProductResponse>>> Update([FromRoute] Guid id,
+    public async Task<ActionResult<CustomResponse<ProductResponse>>> Update([FromRoute] Guid id,
         [FromBody] UpdateProductRequest request,
         CancellationToken token)
     {
@@ -75,7 +75,7 @@ public class ProductsController : ControllerBase
         }
 
         var productResponse = updatedProduct.MapToResponse();
-        var response = Response<ProductResponse?>.CreateSuccessResponse(productResponse);
+        var response = CustomResponse<ProductResponse?>.CreateSuccessResponse(productResponse);
         return Ok(response);
     }
 

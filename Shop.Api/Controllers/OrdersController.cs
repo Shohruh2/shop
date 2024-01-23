@@ -24,7 +24,7 @@ public class OrdersController : ControllerBase
 
     [Authorize]
     [HttpPost(ApiEndpoints.Order.Create)]
-    public async Task<ActionResult<Response<OrderResponse>>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
+    public async Task<ActionResult<CustomResponse<OrderResponse>>> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken token)
     {
         // Получаем идентификатор текущего пользователя
         var currentUser = _currentUserService.GetCurrentUser();
@@ -32,16 +32,16 @@ public class OrdersController : ControllerBase
         // Передаем идентификатор пользователя в CreateAsync
         var order = await _orderService.CreateAsync(request, currentUser.Id, token);
         var orderResponse = order.MapToResponse();
-        var response = Response<OrderResponse?>.CreateSuccessResponse(orderResponse);
+        var response = CustomResponse<OrderResponse?>.CreateSuccessResponse(orderResponse);
         return Ok(response);
     }
 
     [HttpGet(ApiEndpoints.Order.GetAll)]
-    public async Task<ActionResult<Response<OrdersResponse>>> GetAll(CancellationToken token)
+    public async Task<ActionResult<CustomResponse<OrdersResponse>>> GetAll(CancellationToken token)
     {
         var orders = await _orderService.GetAllAsync(token);
         var orderResponse = orders.MapToResponse();
-        var response = Response<OrdersResponse>.CreateSuccessResponse(orderResponse);
+        var response = CustomResponse<OrdersResponse>.CreateSuccessResponse(orderResponse);
         return Ok(response);
     }
 }

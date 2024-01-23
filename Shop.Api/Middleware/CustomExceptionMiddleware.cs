@@ -22,7 +22,7 @@ public class CustomExceptionMiddleware : IMiddleware
             Code = "",
             Message = exception.Message
         };
-        var result = JsonConvert.SerializeObject(Response.CreateErrorResponse(responseError));
+        var result = JsonConvert.SerializeObject(CustomResponse.CreateErrorResponse(responseError));
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             
         return context.Response.WriteAsync(result);

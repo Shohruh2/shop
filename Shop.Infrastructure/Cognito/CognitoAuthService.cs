@@ -2,12 +2,15 @@
 using System.Security.Cryptography;
 using System.Text;
 using Amazon.CognitoIdentityProvider;
+using Amazon.CognitoIdentityProvider.Model;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 using Shop.Application.Mapping;
 using Shop.Application.Services;
 using Shop.Contracts.Requests;
 using Shop.Contracts.Requests.AuthRequests;
 using Shop.Contracts.Requests.CustomerRequests;
+using Shop.Contracts.Responses.AuthResponses;
 
 namespace Shop.Infrastructure.Cognito;
 
@@ -32,10 +35,10 @@ public class CognitoAuthService : IAuthService
         {
             var secretHash = GenerateSecretHash(registrationRequest.UserName, clientId, clientSecret);
             var signUpRequest = registrationRequest.MapToSignUpRequest(clientId, secretHash);
-        
+
             var result = await _cognitoIdentityProvider.SignUpAsync(signUpRequest, token);
-            if (result.HttpStatusCode != HttpStatusCode.OK) 
-            { 
+            if (result.HttpStatusCode != HttpStatusCode.OK)
+            {
                 return false;
             }
 
@@ -47,67 +50,110 @@ public class CognitoAuthService : IAuthService
                 Gender = registrationRequest.Gender,
                 Birthday = registrationRequest.Birthday,
             }, token);
-            
+
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
+        
     }
 
     public async Task<bool> ConfirmRegistration(ConfirmRegistrationRequest confirmRegistrationRequest, CancellationToken token = default)
     {
         var clientId = _configuration["AWS:ClientId"];
         var clientSecret = _configuration["AWS:ClientSecret"];
-        var secretHash = GenerateSecretHash(confirmRegistrationRequest.UserName, clientId, clientSecret);
-        var confirmCode = confirmRegistrationRequest.MapToSignUpRequest(clientId, secretHash);
-        
-        var confirmResult = await _cognitoIdentityProvider.ConfirmSignUpAsync(confirmCode, token);
-        if (confirmResult.HttpStatusCode != HttpStatusCode.OK)
+        if (clientId != null && clientSecret != null) 
         {
-            return false;
-        }
+            var secretHash = GenerateSecretHash(confirmRegistrationRequest.UserName, clientId, clientSecret);
+            var confirmCode = confirmRegistrationRequest.MapToSignUpRequest(clientId, secretHash);
+        
+            var confirmResult = await _cognitoIdentityProvider.ConfirmSignUpAsync(confirmCode, token);
+            if (confirmResult.HttpStatusCode != HttpStatusCode.OK)
+            {
+                return false;
+            }
 
-        return true;
+            return true;
+        }
+        
+        return false;
     }
 
-    public async Task<string?> Login(LoginRequest loginRequest, CancellationToken token = default)
+    public async Task<AuthLoginResponse?> Login(LoginRequest loginRequest, CancellationToken token = default)
     {
         var clientId = _configuration["AWS:ClientId"];
         var clientSecret = _configuration["AWS:ClientSecret"];
-        var secretHash = GenerateSecretHash(loginRequest.UserName, clientId, clientSecret);
-        var login = loginRequest.MapToInitiateAuthRequest(clientId, secretHash);
-
-        // Также можно передать эти 2 токена
-        // var idToken = authResponse.AuthenticationResult.IdToken;
-        //string? accessToken = authResponse.AuthenticationResult.AccessToken;
-        // string refreshToken = authResponse.AuthenticationResult.RefreshToken;
+        if (clientId != null && clientSecret != null)
+        {
+            var secretHash = GenerateSecretHash(loginRequest.UserName, clientId, clientSecret);
+            var login = loginRequest.MapToInitiateAuthRequest(clientId, secretHash);
         
-        try
-        {
-            var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(login, token); 
-            var idToken = authResponse.AuthenticationResult.IdToken;
-            return authResponse.HttpStatusCode == HttpStatusCode.OK ? idToken : null;
+            try
+            {
+                var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(login, token);
+                var refreshToken = authResponse.AuthenticationResult.RefreshToken;
+                var idToken = authResponse.AuthenticationResult.IdToken;
+                var accessToken = authResponse.AuthenticationResult.AccessToken;
+                if (authResponse.HttpStatusCode == HttpStatusCode.OK)
+                {
+                    return new AuthLoginResponse
+                    {
+                        AccessToken = accessToken,
+                        IdToken = idToken,
+                        RefreshToken = refreshToken
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
-        catch (Exception e)
-        {
-            return null;
-        }
+
+        return null;
     }
 
-    public async Task<string> RefreshToken(RefreshTokenRequest refreshTokenRequest, CancellationToken token = default)
+    public async Task<AuthRefreshResponse?> RefreshToken(RefreshTokenRequest refreshTokenRequest, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var clientId = _configuration["AWS:ClientId"];
+        var clientSecret = _configuration["AWS:ClientSecret"];
+        if (clientId != null && clientSecret != null)
+        {
+            var secretHash = GenerateSecretHash(refreshTokenRequest.UserName, clientId, clientSecret);
+            var adminInitiateRequest = refreshTokenRequest.MapToInitiateAuthRequest(clientId, secretHash);
+            
+            try
+            {
+                var authResponse = await _cognitoIdentityProvider.AdminInitiateAuthAsync(adminInitiateRequest, token);
+
+                string newIdToken = authResponse.AuthenticationResult.IdToken;
+
+                if (authResponse.HttpStatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+
+                return new AuthRefreshResponse
+                {
+                    IdToken = newIdToken
+                };
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        return null;
     }
 
-    public string GenerateSecretHash(string username, string? clientId, string? clientSecret)
+    public string GenerateSecretHash(string username, string clientId, string clientSecret)
     {
         var message = Encoding.UTF8.GetBytes(username + clientId);
-        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(clientSecret)))
-        {
-            var hash = hmac.ComputeHash(message);
-            return Convert.ToBase64String(hash);
-        }
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(clientSecret));
+        var hash = hmac.ComputeHash(message);
+        return Convert.ToBase64String(hash);
     }
 }
